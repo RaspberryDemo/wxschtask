@@ -5,7 +5,6 @@ import requests
 import os
 import time
 import schedule
-import json
 
 def get_oneday_text():
     url = 'http://open.iciba.com/dsapi'
@@ -41,7 +40,6 @@ def sch_post_template_msg():
 
 if __name__ == '__main__':
     print 'Background task is running now...'
-    j = get_random_joke()
 
     schedule.every().day.at("12:00").do(sch_post_template_msg)
     print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
