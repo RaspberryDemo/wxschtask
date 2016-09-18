@@ -8,3 +8,7 @@ sudo pip install -r requirements.txt
 
 ```
 
+说明
+----------------------------
+- 每天定时推送每日一句
+
