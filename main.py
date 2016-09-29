@@ -4,14 +4,15 @@ from wx import WxAPI
 import requests
 import os
 import time
-import schedule
+from jsmm import start_spider
+from apscheduler.schedulers.background import BackgroundScheduler
 
 def get_oneday_text():
     url = 'http://open.iciba.com/dsapi'
     resp = requests.get(url)
     return {'en': resp.json()['content'], 'ch': resp.json()['note'], 'img': resp.json()['picture']}
 
-def sch_post_template_msg():
+def post_iciba_template_msg():
     client = WxAPI()
     token = client.get_access_token()
     users = client.get_user_list(token)
@@ -41,9 +42,17 @@ def sch_post_template_msg():
 if __name__ == '__main__':
     print 'Background task is running now...'
 
-    schedule.every().day.at("12:00").do(sch_post_template_msg)
+    scheduler = BackgroundScheduler()
+
+    scheduler.add_job(post_iciba_template_msg, 'cron', hour=12)
+    scheduler.add_job(start_spider, 'cron', minute='*/30')
+    scheduler.start()
     print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
 
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    try:
+        # This is here to simulate application activity (which keeps the main thread alive).
+        while True:
+            time.sleep(2)
+    except (KeyboardInterrupt, SystemExit):
+        # Not strictly necessary if daemonic mode is enabled but should be done if possible
+        scheduler.shutdown()
