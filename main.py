@@ -4,7 +4,7 @@ from wx import WxAPI
 import requests
 import os
 import time
-from jsmm import start_spider
+from runonce import start_spider
 from apscheduler.schedulers.background import BackgroundScheduler
 
 def get_oneday_text():
