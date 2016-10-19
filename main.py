@@ -5,6 +5,7 @@ import requests
 import os
 import time
 from runonce import start_spider
+from dytt import start_grasp
 from apscheduler.schedulers.background import BackgroundScheduler
 
 def get_oneday_text():
@@ -46,6 +47,7 @@ if __name__ == '__main__':
 
     scheduler.add_job(post_iciba_template_msg, 'cron', hour=12)
     scheduler.add_job(start_spider, 'cron', minute='*/30')
+    scheduler.add_job(start_grasp, 'cron', minute='*/30')
     scheduler.start()
     print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
 
