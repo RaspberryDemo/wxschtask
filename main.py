@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     scheduler.add_job(post_iciba_template_msg, 'cron', hour=12)
     scheduler.add_job(start_spider, 'cron', minute='*/30')
-    scheduler.add_job(start_grasp, 'cron', minute='*/30')
+    scheduler.add_job(start_grasp, 'cron', minute='*/20')
     scheduler.start()
     print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
 

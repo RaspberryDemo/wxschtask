@@ -5,7 +5,7 @@ import requests
 import re
 from pymongo import *
 
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'}
+headers = {}
 
 def get_latest_url():
     url = 'http://www.dytt8.net/'
@@ -20,7 +20,7 @@ def get_latest_url():
 def get_movie_detail(url):
     r = requests.get(url, headers=headers)
     r.encoding = 'gb2312'
-    html_doc = r.text.replace(u'简　　介<br /><br />', u'简　　介')
+    html_doc = r.text.replace(u'简　　介<br /><br />', u'简　　介').replace(u'简　　介 <br /><br />', u'简　　介')
     soup = BeautifulSoup(html_doc, 'html.parser')
 
     movie = {}    
