@@ -5,9 +5,11 @@ import requests
 import re
 from pymongo import *
 
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'}
+
 def get_latest_url():
     url = 'http://www.dytt8.net/'
-    r = requests.get(url)
+    r = requests.get(url, headers=headers)
     r.encoding = 'gb2312'
     html_doc = r.text.replace('.[', '').replace(']','')
     soup = BeautifulSoup(html_doc, 'html.parser')
@@ -16,7 +18,7 @@ def get_latest_url():
     return ['http://www.dytt8.net'+link.next_element.next_element['href'] for link in links]
 
 def get_movie_detail(url):
-    r = requests.get(url)
+    r = requests.get(url, headers=headers)
     r.encoding = 'gb2312'
     html_doc = r.text.replace(u'简　　介<br /><br />', u'简　　介')
     soup = BeautifulSoup(html_doc, 'html.parser')
@@ -56,6 +58,7 @@ def save_mongodb(movie):
 def start_grasp():
     try:
         links = get_latest_url()
+        links.reverse()
         for url in links:
             movie = get_movie_detail(url)
             save_mongodb(movie)
@@ -64,17 +67,4 @@ def start_grasp():
 
 if __name__ == '__main__':
     start_grasp()
-    #links = get_latest_url()
-    #for url in links:
-    #    movie = get_movie_detail(url)
-    #    print movie['cover']
-    #    print movie['title']
-    #    print movie['country']
-    #    print movie['time']
-    #    print movie['catalog']
-    #    print movie['lang']
-    #    print movie['director']
-    #    print movie['star']
-    #    print movie['brief']
-    #    print ''
 
