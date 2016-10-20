@@ -71,7 +71,6 @@ def save_mongodb(stores):
 
 def start_spider(page=1):
     stores = spider_web(page)
-    print stores
     save_mongodb(stores)
     
 if __name__ == '__main__':
