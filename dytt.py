@@ -4,12 +4,16 @@ from bs4 import BeautifulSoup
 import requests
 import re
 from pymongo import *
+from tinylog import glog
 
-headers = {}
+logger = glog(__name__, './dytt.log')
+
+headers = {'User-Agent': 'curl/7.38.0', 'Host': 'www.dytt8.net', 'Accept': '*/*'}
+timeout = 10
 
 def get_latest_url():
     url = 'http://www.dytt8.net/'
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, timeout=timeout, headers=headers)
     r.encoding = 'gb2312'
     html_doc = r.text.replace('.[', '').replace(']','')
     soup = BeautifulSoup(html_doc, 'html.parser')
@@ -18,7 +22,7 @@ def get_latest_url():
     return ['http://www.dytt8.net'+link.next_element.next_element['href'] for link in links]
 
 def get_movie_detail(url):
-    r = requests.get(url, headers=headers)
+    r = requests.get(url, timeout=timeout, headers=headers)
     r.encoding = 'gb2312'
     html_doc = r.text.replace(u'简　　介<br /><br />', u'简　　介').replace(u'简　　介 <br /><br />', u'简　　介')
     soup = BeautifulSoup(html_doc, 'html.parser')
@@ -49,11 +53,11 @@ def save_mongodb(movie):
     client = MongoClient("localhost", 27017)
     db = client.dydb
     cols = db.cols
-    if cols.find({'cover': movie['cover']}).count():
-        print "movie %s skipped" %(movie['title'])
-        return
-    cols.insert(movie)
-    print "movie %s saved" %(movie['title'])
+    find = cols.find({'cover': movie['cover']}).count()
+    if not find:
+        cols.insert(movie)
+        print "movie %s saved" %(movie['cover'])
+        logger.info("movie %s saved" %(movie['cover']))
 
 def start_grasp():
     try:
@@ -62,8 +66,9 @@ def start_grasp():
         for url in links:
             movie = get_movie_detail(url)
             save_mongodb(movie)
-    except:
-        print "get movies failed"
+    except Exception, e:
+        logger.info("get movies failed", e)
+    logger.info('job scheduled...')
 
 if __name__ == '__main__':
     start_grasp()

@@ -4,6 +4,9 @@ from soup import SoupX
 from pymongo import *
 import requests
 import os
+from tinylog import glog
+
+logger = glog(__name__, './mm.log')
 
 url = 'http://m.99mm.me/'
 local_path = '/home/pi/www/wxpub/static/'
@@ -12,9 +15,8 @@ def downloadImageFile(imgUrl):
     local_filename = imgUrl.split('/')[-1]  
 
     if os.path.isfile(local_path+local_filename):
-        print "File alreay exist File=%s", local_filename
         return local_filename
-    print "Download Image File=", local_filename  
+    logger.info("Download Image File=%s" % local_filename)
     r = requests.get(imgUrl, stream=True) # here we need to set stream = True parameter  
     with open(local_path+local_filename, 'wb') as f:  
         for chunk in r.iter_content(chunk_size=1024):  
