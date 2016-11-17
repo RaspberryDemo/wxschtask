@@ -15,21 +15,22 @@ logger = glog(__name__, './xyy.log')
 headers = {'User-Agent': 'curl/7.38.0'}
 timeout = 10
 
-def retry_requests(url, timeout=timeout, headers=headers):
+def retry_requests(url, timeout=timeout, headers=headers, func='unknown'):
     retries = 0
     while retries < timeout:
         try:
+            logger.info('%s tries %d...' %(func, retries))
             r = requests.get(url, timeout=timeout, headers=headers)
             return r
-        except:
-            logger.info('retries %d...' %retries)
+        except Exception, e:
+            logger.info('try failed - ' + repr(e))
             retries = retries + 1
             time.sleep(1)
     return None
     
 
 def get_latest_url():
-    r = retry_requests(url, timeout=timeout, headers=headers)
+    r = retry_requests(url, timeout=timeout, headers=headers, func='get_latest_url')
     if not r:
         return []
     r.encoding = 'gbk'
@@ -44,7 +45,7 @@ def get_latest_url():
     return findings
 
 def get_content(uri):
-    r = retry_requests(uri, timeout=timeout, headers=headers)
+    r = retry_requests(uri, timeout=timeout, headers=headers, func='get_content')
     if not r:
         return None
     r.encoding = 'gbk'
@@ -62,26 +63,22 @@ def save_mongodb(title, content):
     find = cols.find({'title': title}).count()
     if not find:
         cols.insert({'title': title, 'content': content})
-        print "%s saved" % title
         logger.info("%s saved" %(title))
     else:
-        print 'skip %s' % title
         logger.info("%s skipped" %(title))
 
 def run_xyy():
     try:
         findings = get_latest_url()
         findings.reverse()
-        time.sleep(2)
         for f in findings:
             uri = f['uri']
             content = get_content(uri)
             if not content:
                 continue
             save_mongodb(f['title'], content)
-            time.sleep(2)
     except Exception, e:
-        logger.info("get article failed - " + e.message)
+        logger.info("get article failed - " + repr(e))
     logger.info('job scheduled...')
 
 if __name__ == '__main__':
