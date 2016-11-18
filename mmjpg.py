@@ -5,16 +5,17 @@ from pymongo import *
 import requests
 import os
 import re
+import time
 from tinylog import glog
 
 logger = glog(__name__, './mmjpg.log')
 
 url = 'http://www.mmjpg.com/'
-local_path = '/home/pi/www/wxpub/static/mmjpg/'
+local_path = '/home/pi/www/wxpub/static/'
 
 def get_local_filename(link):
     local_filename = '-'.join(link.split('/')[-3:])
-    return local_filename
+    return 'mmjpg/'+local_filename
 
 def downloadImageFile(imgUrl):  
     local_filename = get_local_filename(imgUrl) 
@@ -38,7 +39,6 @@ def run_mmjpg(page=1):
         destpages = link.find_all("a")
 
         findings = [{'alt': d.string, 'uri': d['href']} for d in destpages]
-        stores = []
         for f in findings:
             soup = SoupX(f['uri'], 'utf-8').get()
             infostr = soup.find_all(string=re.compile('var picinfo ='))
@@ -50,8 +50,9 @@ def run_mmjpg(page=1):
             for p in range(1, int(picinfo[2])+1):
                 imgUrl = 'http://img.mmjpg.com/%s/%s/%s.jpg' % (picinfo[0], picinfo[1], p)
                 local_filename = downloadImageFile(imgUrl)
-                all_alias.append('mmjpg/'+local_filename)            
-            info = {'alt': f['alt'], 'img': f['uri'], 'next': '', 'images': [], 'alias': all_alias, 'source': 'mmjpg'}
+                all_alias.append(local_filename)            
+            info = {'alt': f['alt'], 'img': f['uri'], 
+                    'alias': all_alias, 'source': 'mmjpg', 'record': time.time()}
         
             stores.append(info)
     return stores

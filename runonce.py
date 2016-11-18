@@ -4,6 +4,7 @@ from soup import SoupX
 from pymongo import *
 import requests
 import os
+import time
 from tinylog import glog
 
 logger = glog(__name__, './mm.log')
@@ -14,7 +15,7 @@ local_path = '/home/pi/www/wxpub/static/'
 def get_local_filename(link):
     local_filename = '-'.join(link.split('/')[-2:])
     print local_filename
-    return local_filename
+    return '99mm/'+local_filename
 
 def downloadImageFile(imgUrl):  
     local_filename = get_local_filename(imgUrl) 
@@ -62,7 +63,7 @@ def spider_web(page=1):
             get_all_images(next,all_images,all_alias)
             
             info = {'alt': img['alt'], 'img': img['data-img'],
-                    'next': next, 'images': all_images, 'alias': all_alias}
+                    'alias': all_alias, 'source': '99mm', 'record': time.time()}
             stores.append(info)
             idx += 1
         return stores
@@ -81,5 +82,5 @@ def start_spider(page=1):
     save_mongodb(stores)
     
 if __name__ == '__main__':
-    for i in range(1,6):
+    for i in range(1,2):
         start_spider(i)
