@@ -45,11 +45,16 @@ def get_latest_url():
     return findings
 
 def get_content(uri):
+    #uri = 'http://204.152.220.23/thread-292336-1-1.html'
     r = retry_requests(uri, timeout=timeout, headers=headers, func='get_content')
     if not r:
         return None
     r.encoding = 'gbk'
-    html_doc = r.text
+    html_doc = r.text.replace('<br />', '')
+    p = re.compile(r'<span style=.*</span>')
+    html_doc = p.sub(r'', html_doc)
+    p = re.compile(r'<font class=.*</font>')
+    html_doc = p.sub(r'', html_doc)
     soup = BeautifulSoup(html_doc, 'html.parser')
     links = soup.find_all(string=re.compile(u'【'))
     links = [link for link in links if 'by' not in link]
@@ -76,6 +81,10 @@ def run_xyy():
             content = get_content(uri)
             if not content:
                 continue
+            if content.count(u'【') < 4:
+                continue
+            #print content
+            #print '------------'
             save_mongodb(f['title'], content)
     except Exception, e:
         logger.info("get article failed - " + repr(e))
