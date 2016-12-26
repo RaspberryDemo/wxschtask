@@ -32,7 +32,10 @@ def get_movie_detail(url):
     movie['cover'] = img[1]['src']
 
     t = soup.find_all(string=re.compile(u'◎译'))
+    if not t:
+        t = soup.find_all(string=re.compile(u'◎片'))
     movie['title'] = t[0].split(u'　')[-1].split('/')[0]
+
     t = soup.find_all(string=re.compile(u'◎国'))
     movie['country'] = t[0].split(u'　')[-1]
     t = soup.find_all(string=re.compile(u'◎年'))
@@ -63,11 +66,12 @@ def start_grasp():
     try:
         links = get_latest_url()
         links.reverse()
+
         for url in links:
             movie = get_movie_detail(url)
             save_mongodb(movie)
     except Exception, e:
-        logger.info("get movies failed", e)
+        logger.info("get movies failed %s" % e)
     logger.info('job scheduled...')
 
 if __name__ == '__main__':
