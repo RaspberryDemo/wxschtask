@@ -12,7 +12,7 @@ headers = {'User-Agent': 'curl/7.38.0', 'Host': 'www.dytt8.net', 'Accept': '*/*'
 timeout = 10
 
 def get_latest_url():
-    url = 'http://www.dytt8.net/index.html'
+    url = 'http://www.dytt8.net/index.htm'
     r = requests.get(url, timeout=timeout, headers=headers)
     r.encoding = 'gb2312'
     html_doc = r.text.replace('.[', '').replace(']','')
