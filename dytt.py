@@ -8,7 +8,8 @@ from tinylog import glog
 
 logger = glog(__name__, './dytt.log')
 
-headers = {'User-Agent': 'curl/7.38.0', 'Host': 'www.dytt8.net', 'Accept': '*/*'}
+#headers = {'User-Agent': 'curl/7.38.0', 'Host': 'www.dytt8.net', 'Accept': '*/*'}
+headers = {'User-Agent': 'curl/7.38.0'}
 timeout = 10
 
 def get_latest_url():
