@@ -3,6 +3,7 @@
 from bs4 import BeautifulSoup
 import requests
 import re
+import time
 from pymongo import *
 from tinylog import glog
 
@@ -51,6 +52,7 @@ def get_movie_detail(url):
     movie['star'] = t[0].split(u'　')[-1]
     t = soup.find_all(string=re.compile(u'◎简'))
     movie['brief'] = t[0].split(u'　')[-1]
+    movie['timestamp'] = time.time()
     return movie
 
 def save_mongodb(movie):
