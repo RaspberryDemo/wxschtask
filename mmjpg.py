@@ -65,6 +65,7 @@ def save_mongodb(stores):
         if mmc.find({'img':s['img']}).count():
             continue
         mmc.insert(s)
+    client.close()
 
 def start_mmjpg(page=1):
     findings = run_mmjpg(page)

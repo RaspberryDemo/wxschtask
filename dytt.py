@@ -64,6 +64,7 @@ def save_mongodb(movie):
         cols.insert(movie)
         print "movie %s saved" %(movie['cover'])
         logger.info("movie %s saved" %(movie['cover']))
+    client.close()
 
 def start_grasp():
     try:

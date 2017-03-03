@@ -76,6 +76,7 @@ def save_mongodb(stores):
         if mmc.find({'img':s['img']}).count():
             continue
         mmc.insert(s)
+    client.close()
 
 def start_spider(page=1):
     stores = spider_web(page)

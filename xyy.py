@@ -71,6 +71,7 @@ def save_mongodb(title, content):
         logger.info("%s saved" %(title))
     else:
         logger.info("%s skipped" %(title))
+    client.close()
 
 def run_xyy():
     try:
